@@ -1,3 +1,17 @@
+
+-- Global rate limiter for HttpGet
+local lastRequestTime = 0
+local REQUEST_DELAY = 1  -- Adjust delay as needed
+
+local function SafeHttpGet(url)
+    while tick() - lastRequestTime < REQUEST_DELAY do
+        wait(0.1)
+    end
+    lastRequestTime = tick()
+    return game:HttpGet(url)
+end
+
+
 --[[
   Library might be a bit outdated as I did not save it
   Downloaded from history so not sure if this is the most recent version
@@ -352,7 +366,7 @@ do
             data = readfile(library.folders.assets.."/"..imageName..".png")
         else
             if imageLink then
-                data = game:HttpGet(imageLink)
+                data = SafeHttpGet(imageLink)
                 writefile(library.folders.assets.."/"..imageName..".png", data)
             else
                 return
